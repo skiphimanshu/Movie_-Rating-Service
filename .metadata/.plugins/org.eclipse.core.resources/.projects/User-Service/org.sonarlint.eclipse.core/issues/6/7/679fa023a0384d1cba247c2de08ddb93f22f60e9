@@ -1,0 +1,6 @@
+
+n
+java:S1128";Remove this unused import 'com.user.service.entity.Rating'.(Àÿ¾¥8«éŸúÛ0Hº	RMINORZ
+CODE_SMELL
+~
+java:S4684"@Replace this persistent entity with a simple POJO or DTO object.(Ú“Ç¾üÿÿÿÿ8Éè»ÝÒ0H¼	RCRITICALZVULNERABILITY

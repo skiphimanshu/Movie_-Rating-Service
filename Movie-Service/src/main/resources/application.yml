@@ -1,0 +1,25 @@
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+server:
+  port: 8480
+spring:
+  application:
+    name: MOVIE-SERVICE
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    name: test
+    password: Himanshu
+    url: jdbc:mysql://localhost/movierating
+    username: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect

@@ -1,0 +1,77 @@
+package com.user.service.services;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.user.service.entity.Movie;
+import com.user.service.entity.Rating;
+import com.user.service.entity.User;
+import com.user.service.exception.ResourceNotFoundException;
+import com.user.service.repository.UserRepository;
+
+@Service
+public class UserServiceImpl implements UserService{
+	
+	
+	private Logger logger  = LoggerFactory.getLogger(UserServiceImpl.class);
+	
+	@Autowired
+	private UserRepository repository;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+
+	public User creaateUser(User user) {
+		
+		String randomId = UUID.randomUUID().toString();
+		user.setId(randomId);
+
+		return this.repository.save(user);
+	}
+
+	@Override
+	public List<User> getAllUser() {
+		
+		return this.repository.findAll();
+	}
+
+	@Override
+	public User getUserById(String id) {
+		
+		 User user = this.repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User Not Found Exception"));
+		 
+		 //Fetch Particular user Ratings
+		 
+		 Rating[] userRatings = restTemplate.getForObject("http://localhost:8482/rating/user-rating/"+id,Rating[].class);
+		 logger.info("{}",userRatings);
+		 List<Rating> ratinglists = Arrays.stream(userRatings).toList();
+		 
+		 if(ratinglists == null) {
+			 user.setRatings(null);
+		 }else {
+			 List<Rating> ratings = ratinglists.stream().map(rating -> {
+				 Movie movie = restTemplate.getForObject("http://localhost:8480/movie/movie/"+rating.getMovieId(), Movie.class);
+				 rating.setMovie(movie);
+				 
+				 return rating;
+				 
+			 }).collect(Collectors.toList());
+			 user.setRatings(ratings);
+		 }
+		
+		 
+		 return user;
+		 
+		 
+	}
+
+
+}
